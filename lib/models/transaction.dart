@@ -9,5 +9,11 @@ class Transaction extends HiveObject{
   final DateTime transactionDate;
   @HiveField(2)
   final TransactionType transactionType;
-  Transaction(this.amount, this.transactionType, this.transactionDate);
+  @HiveField(3)
+  final String guid;
+  Transaction(this.amount, this.transactionType, this.transactionDate, this.guid);
+  @override
+  String toString() {
+    return 'Transaction{amount: $amount, transactionDate: $transactionDate, transactionType: $transactionType, guid: $guid}';
+  }
 }

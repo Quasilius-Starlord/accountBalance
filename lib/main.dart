@@ -4,6 +4,7 @@ import 'package:account_balance/pages/Settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:account_balance/models/transaction.dart';
 import 'package:account_balance/models/enums/transaction_type.dart';
+import 'package:flutter_guid/flutter_guid.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'utility/helpers.dart';
@@ -37,19 +38,32 @@ class _HomeState extends State<Home> {
   int balance = HiveManager().getSalary();
   String? userCredential=HiveManager().getUserCredentials();
   _HomeState(){
+    hiveManager.getAllTransactions();
     debugPrint("$balance $userCredential balance salary");
   }
-  List<int> expensesList = [];
   List<Transaction> transactionsList = HiveManager().getAllTransactions();
   void addExpense(int expense) {
-    expensesList.add(expense);
-    List<Transaction> transactions = hiveManager.putTransaction(Transaction(expense, TransactionType.EXPENSE, DateTime.now()));
+    List<Transaction> transactions = hiveManager.putTransaction(
+        Transaction(
+          expense,
+          TransactionType.EXPENSE,
+          DateTime.now(),
+          Guid.generate().value
+        ));
     setState(() {
       balance = balance-expense;
-      expensesList = expensesList;
       transactionsList = transactions;
     });
     hiveManager.setSalary(balance);
+  }
+  void deleteTransaction(String guid){
+    Transaction transaction = transactionsList.firstWhere((element) => element.guid == guid);
+    transactionsList.remove(transaction);
+      hiveManager.deleteTransactionAt(guid);
+    setState(() {
+      balance = balance+transaction.amount;
+      transactionsList = transactionsList;
+    });
   }
   void updateCredential(String token){
     hiveManager.setUserCredentials(token);
@@ -58,9 +72,15 @@ class _HomeState extends State<Home> {
     });
   }
   void clearCredential(){
-    hiveManager.setUserCredentials(null);
     setState(() {
       userCredential= null;
+    });
+  }
+  void clearTransactions(){
+    // hiveManager.getSalary()
+    setState(() {
+      balance = 40000;
+      transactionsList= [];
     });
   }
   void setBalance(int salary){
@@ -71,7 +91,6 @@ class _HomeState extends State<Home> {
   }
   @override
   Widget build(BuildContext context) {
-    final List<int> renderExpenseList = List.from(expensesList.reversed);
     final List<Transaction> renderTransactionList = List.from(transactionsList.reversed);
     if(userCredential == null){
       return Scaffold(
@@ -87,7 +106,9 @@ class _HomeState extends State<Home> {
           backgroundColor: Colors.lightBlue,
           actions: <Widget>[
             IconButton(onPressed: () {
+              hiveManager.purgeHive();
               clearCredential();
+              clearTransactions();
             }, icon: const Icon(Icons.logout)),
             PopupMenuButton(icon: const Icon(Icons.more_vert),itemBuilder: (context) {
               return [
@@ -106,20 +127,23 @@ class _HomeState extends State<Home> {
             })
           ],
         ),
-        body: Column(
-          children: <Widget>[
-            Text('Remaining balance: ${formatNumber(balance)}', style: const TextStyle(
-                fontSize: 25,
-                fontStyle: FontStyle.italic,
-                color: Colors.lightBlue,
-                fontWeight: FontWeight.w800
-            )),
-            ExpenseInputTextbox(
-              callback: addExpense,
-            ),
-            TransactionList(transactionList: renderTransactionList)
-          ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Text('Remaining balance: ${formatNumber(balance)}', style: const TextStyle(
+                  fontSize: 25,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.lightBlue,
+                  fontWeight: FontWeight.w800
+              )),
+              ExpenseInputTextbox(
+                callback: addExpense,
+              ),
+              TransactionList(transactionList: renderTransactionList, deleteTransaction: deleteTransaction)
+            ],
+          ),
         ),
+        resizeToAvoidBottomInset: false,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             showModalBottomSheet(context: context, builder: (ctx) {
@@ -133,28 +157,5 @@ class _HomeState extends State<Home> {
         ),
       );
     }
-  }
-}
-
-class ExpensesList extends StatelessWidget {
-  final List<int> expensesList;
-  const ExpensesList({super.key, required this.expensesList});
-
-  @override
-  Widget build(BuildContext context) {
-    if(expensesList.isEmpty){
-      return Container(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 0),
-          child: const Text('No expenses has been added', style: TextStyle(fontSize: 20)),
-      );
-    }
-    return ListView.builder(
-      itemCount: expensesList.length,
-      scrollDirection: Axis.vertical,
-      shrinkWrap: true,
-      itemBuilder: (context, index) {
-        return Text(formatNumber(expensesList.elementAt(index)));
-      }
-    );
   }
 }
