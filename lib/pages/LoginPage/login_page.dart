@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     }catch(e){
       debugPrint("Error $e");
-      final snack = SnackBar(content: Text("Network error encountered"));
+      const snack = SnackBar(content: Text("Network error encountered"));
       ScaffoldMessenger.of(context).showSnackBar(snack);
       e.toString();
     } finally {
