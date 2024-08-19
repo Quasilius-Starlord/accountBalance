@@ -67,6 +67,7 @@ class _HomeState extends State<Home> {
       balance = balance+transaction.amount;
       transactionsList = transactionsList;
     });
+    hiveManager.setSalary(balance);
   }
   void updateCredential(String token){
     hiveManager.setUserCredentials(token);
