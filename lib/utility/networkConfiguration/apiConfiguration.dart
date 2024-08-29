@@ -1,6 +1,6 @@
 
 class ApiConfiguration{
-  static const String endPoint = "http://192.168.1.16:8080/";
+  static const String endPoint = "https://account-spring-app.onrender.com/users/login/";
   static const String login="users/login";
 }
 
