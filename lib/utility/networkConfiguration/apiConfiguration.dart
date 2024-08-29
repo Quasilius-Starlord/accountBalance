@@ -1,6 +1,6 @@
 
 class ApiConfiguration{
-  static const String endPoint = "https://account-spring-app.onrender.com/users/login/";
+  static const String endPoint = "https://account-spring-app.onrender.com/";
   static const String login="users/login";
 }
 
