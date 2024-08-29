@@ -16,7 +16,5 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 
 Application release link:
-- [Release: 1.0.0](https://drive.google.com/file/d/1pUEqcSRBwGM0VBAqDzo7nSBWCfsABNXR/view?usp=sharing)
-    Offline tracking of transactions, deleting transactions, editing basic settings
-- [Release: 1.0.1](https://drive.google.com/file/d/1oQrsOHSD0BdVV_SHBSiaybdks6kADJJH/view?usp=sharing)
-    Bug fix for transaction delete
+- [Release: 1.0.0](https://drive.google.com/file/d/1yh6qZ7caGx6YEsszJf-OomRZxgxYghec/view?usp=sharing)
+    Offline tracking of transactions, deleting transactions, editing basic settings, PROD Release
