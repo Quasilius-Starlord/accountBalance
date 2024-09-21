@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:account_balance/Configuration/http_overites.dart';
 import 'package:account_balance/Hive/Hive.dart';
+import 'package:account_balance/components/TransactionTypeSelector/transaction_type_selector.dart';
 import 'package:account_balance/pages/LoginPage/login_page.dart';
 import 'package:account_balance/pages/Settings/settings.dart';
 import 'package:flutter/material.dart';
@@ -45,11 +46,11 @@ class _HomeState extends State<Home> {
     debugPrint("$balance $userCredential balance salary");
   }
   List<Transaction> transactionsList = HiveManager().getAllTransactions();
-  void addExpense(int expense) {
+  void addExpense(int expense, TransactionType transactionType) {
     List<Transaction> transactions = hiveManager.putTransaction(
         Transaction(
           expense,
-          TransactionType.EXPENSE,
+          transactionType,
           DateTime.now(),
           Guid.generate().value
         ));
